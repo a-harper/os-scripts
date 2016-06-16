@@ -5,6 +5,7 @@
 #  Personal post-install script for Kali Linux Rolling        #
 #-Author(s)---------------------------------------------------#
 #  g0tmilk ~ https://blog.g0tmi1k.com/                        #
+#  Adapated by a-harper ~ http://blog.itsec.im/               #
 #-Operating System--------------------------------------------#
 #  Designed for: Kali Linux Rolling [x64] (VM - VMware)       #
 #     Tested on: Kali Linux 2016.1 x64/x84/full/light/mini/vm #
@@ -39,7 +40,7 @@ if [ 1 -eq 0 ]; then    # This is never true, thus it acts as block comments ;)
 ################################################################################
 ### One liner - Grab the latest version and execute! ###########################
 ################################################################################
-wget -qO kali-rolling.sh https://raw.github.com/g0tmi1k/os-scripts/master/kali-rolling.sh \
+wget -qO kali-rolling.sh https://raw.github.com/a-harper/os-scripts/master/kali-rolling.sh \
   && bash kali-rolling.sh -burp -keyboard gb -timezone "Europe/London"
 ################################################################################
 fi
@@ -296,9 +297,9 @@ if [[ "${hardenDNS}" != "false" ]]; then
   file=/etc/resolv.conf; [ -e "${file}" ] && cp -n $file{,.bkup}
   chattr -i "${file}" 2>/dev/null
   #--- Use OpenDNS DNS
-  echo -e 'nameserver 208.67.222.222\nnameserver 208.67.220.220' > "${file}"
+  #echo -e 'nameserver 208.67.222.222\nnameserver 208.67.220.220' > "${file}"
   #--- Use Google DNS
-  #echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' > "${file}"
+  echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' > "${file}"
   #--- Protect it
   chattr +i "${file}" 2>/dev/null
 else
@@ -451,262 +452,9 @@ else
   echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping GNOME${RESET}..." 1>&2
 fi
 
-
-##### Install XFCE4
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}XFCE4${RESET}${RESET} ~ desktop environment"
-export DISPLAY=:0.0
-apt -y -qq install curl \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-apt -y -qq install xfce4 xfce4-mount-plugin xfce4-notifyd xfce4-places-plugin \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-(dmidecode | grep -iq virtual) \
-  || (apt -y -qq install xfce4-battery-plugin \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2)
-#--- Configuring XFCE
-mkdir -p ~/.config/xfce4/panel/launcher-{2,4,5,6,7,8,9}/
-mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml/
-cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml \
-  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-<?xml version="1.0" encoding="UTF-8"?>
-
-<channel name="xfce4-keyboard-shortcuts" version="1.0">
-  <property name="commands" type="empty">
-    <property name="custom" type="empty">
-      <property name="XF86Display" type="string" value="xfce4-display-settings --minimal"/>
-      <property name="&lt;Alt&gt;F2" type="string" value="xfrun4"/>
-      <property name="&lt;Primary&gt;space" type="string" value="xfce4-appfinder"/>
-      <property name="&lt;Primary&gt;&lt;Alt&gt;t" type="string" value="/usr/bin/exo-open --launch TerminalEmulator"/>
-      <property name="&lt;Primary&gt;&lt;Alt&gt;Delete" type="string" value="xflock4"/>
-      <property name="&lt;Primary&gt;Escape" type="string" value="xfdesktop --menu"/>
-      <property name="&lt;Super&gt;p" type="string" value="xfce4-display-settings --minimal"/>
-      <property name="override" type="bool" value="true"/>
-    </property>
-  </property>
-  <property name="xfwm4" type="empty">
-    <property name="custom" type="empty">
-      <property name="&lt;Alt&gt;&lt;Control&gt;End" type="string" value="move_window_next_workspace_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;Home" type="string" value="move_window_prev_workspace_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_1" type="string" value="move_window_workspace_1_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_2" type="string" value="move_window_workspace_2_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_3" type="string" value="move_window_workspace_3_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_4" type="string" value="move_window_workspace_4_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_5" type="string" value="move_window_workspace_5_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_6" type="string" value="move_window_workspace_6_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_7" type="string" value="move_window_workspace_7_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_8" type="string" value="move_window_workspace_8_key"/>
-      <property name="&lt;Alt&gt;&lt;Control&gt;KP_9" type="string" value="move_window_workspace_9_key"/>
-      <property name="&lt;Alt&gt;&lt;Shift&gt;Tab" type="string" value="cycle_reverse_windows_key"/>
-      <property name="&lt;Alt&gt;Delete" type="string" value="del_workspace_key"/>
-      <property name="&lt;Alt&gt;F10" type="string" value="maximize_window_key"/>
-      <property name="&lt;Alt&gt;F11" type="string" value="fullscreen_key"/>
-      <property name="&lt;Alt&gt;F12" type="string" value="above_key"/>
-      <property name="&lt;Alt&gt;F4" type="string" value="close_window_key"/>
-      <property name="&lt;Alt&gt;F6" type="string" value="stick_window_key"/>
-      <property name="&lt;Alt&gt;F7" type="string" value="move_window_key"/>
-      <property name="&lt;Alt&gt;F8" type="string" value="resize_window_key"/>
-      <property name="&lt;Alt&gt;F9" type="string" value="hide_window_key"/>
-      <property name="&lt;Alt&gt;Insert" type="string" value="add_workspace_key"/>
-      <property name="&lt;Alt&gt;space" type="string" value="popup_menu_key"/>
-      <property name="&lt;Alt&gt;Tab" type="string" value="cycle_windows_key"/>
-      <property name="&lt;Control&gt;&lt;Alt&gt;d" type="string" value="show_desktop_key"/>
-      <property name="&lt;Control&gt;&lt;Alt&gt;Down" type="string" value="down_workspace_key"/>
-      <property name="&lt;Control&gt;&lt;Alt&gt;Left" type="string" value="left_workspace_key"/>
-      <property name="&lt;Control&gt;&lt;Alt&gt;Right" type="string" value="right_workspace_key"/>
-      <property name="&lt;Control&gt;&lt;Alt&gt;Up" type="string" value="up_workspace_key"/>
-      <property name="&lt;Control&gt;&lt;Shift&gt;&lt;Alt&gt;Left" type="string" value="move_window_left_key"/>
-      <property name="&lt;Control&gt;&lt;Shift&gt;&lt;Alt&gt;Right" type="string" value="move_window_right_key"/>
-      <property name="&lt;Control&gt;&lt;Shift&gt;&lt;Alt&gt;Up" type="string" value="move_window_up_key"/>
-      <property name="&lt;Control&gt;F1" type="string" value="workspace_1_key"/>
-      <property name="&lt;Control&gt;F10" type="string" value="workspace_10_key"/>
-      <property name="&lt;Control&gt;F11" type="string" value="workspace_11_key"/>
-      <property name="&lt;Control&gt;F12" type="string" value="workspace_12_key"/>
-      <property name="&lt;Control&gt;F2" type="string" value="workspace_2_key"/>
-      <property name="&lt;Control&gt;F3" type="string" value="workspace_3_key"/>
-      <property name="&lt;Control&gt;F4" type="string" value="workspace_4_key"/>
-      <property name="&lt;Control&gt;F5" type="string" value="workspace_5_key"/>
-      <property name="&lt;Control&gt;F6" type="string" value="workspace_6_key"/>
-      <property name="&lt;Control&gt;F7" type="string" value="workspace_7_key"/>
-      <property name="&lt;Control&gt;F8" type="string" value="workspace_8_key"/>
-      <property name="&lt;Control&gt;F9" type="string" value="workspace_9_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Page_Down" type="string" value="lower_window_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Page_Up" type="string" value="raise_window_key"/>
-      <property name="&lt;Super&gt;Tab" type="string" value="switch_window_key"/>
-      <property name="Down" type="string" value="down_key"/>
-      <property name="Escape" type="string" value="cancel_key"/>
-      <property name="Left" type="string" value="left_key"/>
-      <property name="Right" type="string" value="right_key"/>
-      <property name="Up" type="string" value="up_key"/>
-      <property name="override" type="bool" value="true"/>
-      <property name="&lt;Super&gt;Left" type="string" value="tile_left_key"/>
-      <property name="&lt;Super&gt;Right" type="string" value="tile_right_key"/>
-      <property name="&lt;Super&gt;Up" type="string" value="maximize_window_key"/>
-    </property>
-  </property>
-  <property name="providers" type="array">
-    <value type="string" value="xfwm4"/>
-    <value type="string" value="commands"/>
-  </property>
-</channel>
-EOF
-#--- Desktop files
-ln -sf /usr/share/applications/exo-terminal-emulator.desktop ~/.config/xfce4/panel/launcher-2/exo-terminal-emulator.desktop
-ln -sf /usr/share/applications/kali-wireshark.desktop        ~/.config/xfce4/panel/launcher-4/kali-wireshark.desktop
-ln -sf /usr/share/applications/firefox-esr.desktop           ~/.config/xfce4/panel/launcher-5/firefox-esr.desktop
-ln -sf /usr/share/applications/kali-burpsuite.desktop        ~/.config/xfce4/panel/launcher-6/kali-burpsuite.desktop
-ln -sf /usr/share/applications/kali-msfconsole.desktop       ~/.config/xfce4/panel/launcher-7/kali-msfconsole.desktop
-ln -sf /usr/share/applications/org.gnome.gedit.desktop       ~/.config/xfce4/panel/launcher-8/textedit.desktop
-ln -sf /usr/share/applications/xfce4-appfinder.desktop       ~/.config/xfce4/panel/launcher-9/xfce4-appfinder.desktop
-#--- XFCE settings
-_TMP=""
-[ "${burpFree}" != "false" ] \
-  && _TMP="-t int -s 6"
-xfconf-query -n -a -c xfce4-panel -p /panels -t int -s 0
-xfconf-query --create --channel xfce4-panel --property /panels/panel-0/plugin-ids \
-  -t int -s 1   -t int -s 2   -t int -s 3   -t int -s 4   -t int -s 5  ${_TMP}        -t int -s 7   -t int -s 8  -t int -s 9 \
-  -t int -s 10  -t int -s 11  -t int -s 13  -t int -s 15  -t int -s 16  -t int -s 17  -t int -s 19  -t int -s 20
-xfconf-query -n -c xfce4-panel -p /panels/panel-0/length -t int -s 100
-xfconf-query -n -c xfce4-panel -p /panels/panel-0/size -t int -s 30
-xfconf-query -n -c xfce4-panel -p /panels/panel-0/position -t string -s "p=6;x=0;y=0"
-xfconf-query -n -c xfce4-panel -p /panels/panel-0/position-locked -t bool -s true
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-1 -t string -s applicationsmenu     # application menu
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-2 -t string -s launcher             # terminal   ID: exo-terminal-emulator
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-3 -t string -s places               # places
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-4 -t string -s launcher             # wireshark  ID: kali-wireshark
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-5 -t string -s launcher             # firefox    ID: firefox-esr
-[ "${burpFree}" != "false" ] \
-  && xfconf-query -n -c xfce4-panel -p /plugins/plugin-6 -t string -s launcher        # burpsuite  ID: kali-burpsuite
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-7 -t string -s launcher             # msf        ID: kali-msfconsole
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-8 -t string -s launcher             # gedit      ID: org.gnome.gedit.desktop
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-9 -t string -s launcher             # search     ID: xfce4-appfinder
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-10 -t string -s tasklist
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-11 -t string -s separator
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-13 -t string -s mixer   # audio
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-15 -t string -s systray
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-16 -t string -s actions
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-17 -t string -s clock
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-19 -t string -s pager
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-20 -t string -s showdesktop
-#--- application menu
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-1/show-tooltips -t bool -s true
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-1/show-button-title -t bool -s false
-#--- terminal
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-2/items -t string -s "exo-terminal-emulator.desktop" -a
-#--- places
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-3/mount-open-volumes -t bool -s true
-#--- wireshark
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-4/items -t string -s "kali-wireshark.desktop" -a
-#--- firefox
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-5/items -t string -s "firefox-esr.desktop" -a
-#--- burp
-[ "${burpFree}" != "false" ] \
-  && xfconf-query -n -c xfce4-panel -p /plugins/plugin-6/items -t string -s "kali-burpsuite.desktop" -a
-#--- metasploit
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-7/items -t string -s "kali-msfconsole.desktop" -a
-#--- gedit/atom
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-8/items -t string -s "textedit.desktop" -a
-#--- search
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-9/items -t string -s "xfce4-appfinder.desktop" -a
-#--- tasklist (& separator - required for padding)
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-10/show-labels -t bool -s true
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-10/show-handle -t bool -s false
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-11/style -t int -s 0
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-11/expand -t bool -s true
-#--- systray
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-15/show-frame -t bool -s false
-#--- actions
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-16/appearance -t int -s 1
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-16/items \
-  -t string -s "+logout-dialog"  -t string -s "-switch-user"  -t string -s "-separator" \
-  -t string -s "-logout"  -t string -s "+lock-screen"  -t string -s "+hibernate"  -t string -s "+suspend"  -t string -s "+restart"  -t string -s "+shutdown"  -a
-#--- clock
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-17/show-frame -t bool -s false
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-17/mode -t int -s 2
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-17/digital-format -t string -s "%R, %Y-%m-%d"
-#--- pager / workspace
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-19/miniature-view -t bool -s true
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-19/rows -t int -s 1
-xfconf-query -n -c xfwm4 -p /general/workspace_count -t int -s 3
-#--- Theme options
-xfconf-query -n -c xsettings -p /Net/ThemeName -s "Kali-X"
-xfconf-query -n -c xsettings -p /Net/IconThemeName -s "Vibrancy-Kali"
-xfconf-query -n -c xsettings -p /Gtk/MenuImages -t bool -s true
-xfconf-query -n -c xfce4-panel -p /plugins/plugin-1/button-icon -t string -s "kali-menu"
-#--- Window management
-xfconf-query -n -c xfwm4 -p /general/snap_to_border -t bool -s true
-xfconf-query -n -c xfwm4 -p /general/snap_to_windows -t bool -s true
-xfconf-query -n -c xfwm4 -p /general/wrap_windows -t bool -s false
-xfconf-query -n -c xfwm4 -p /general/wrap_workspaces -t bool -s false
-xfconf-query -n -c xfwm4 -p /general/click_to_focus -t bool -s false
-xfconf-query -n -c xfwm4 -p /general/click_to_focus -t bool -s true
-#--- Hide icons
-xfconf-query -n -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -t bool -s false
-xfconf-query -n -c xfce4-desktop -p /desktop-icons/file-icons/show-home -t bool -s false
-xfconf-query -n -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -t bool -s false
-xfconf-query -n -c xfce4-desktop -p /desktop-icons/file-icons/show-removable -t bool -s false
-#--- Start and exit values
-xfconf-query -n -c xfce4-session -p /splash/Engine -t string -s ""
-xfconf-query -n -c xfce4-session -p /shutdown/LockScreen -t bool -s true
-xfconf-query -n -c xfce4-session -p /general/SaveOnExit -t bool -s false
-#--- App Finder
-xfconf-query -n -c xfce4-appfinder -p /last/pane-position -t int -s 248
-xfconf-query -n -c xfce4-appfinder -p /last/window-height -t int -s 742
-xfconf-query -n -c xfce4-appfinder -p /last/window-width -t int -s 648
-#--- Enable compositing
-xfconf-query -n -c xfwm4 -p /general/use_compositing -t bool -s true
-xfconf-query -n -c xfwm4 -p /general/frame_opacity -t int -s 85
-#--- Remove "Mail Reader" from menu
-file=/usr/share/applications/exo-mail-reader.desktop   #; [ -e "${file}" ] && cp -n $file{,.bkup}
-sed -i 's/^NotShowIn=*/NotShowIn=XFCE;/; s/^OnlyShowIn=XFCE;/OnlyShowIn=/' "${file}"
-grep -q "NotShowIn=XFCE" "${file}" \
-  || echo "NotShowIn=XFCE;" >> "${file}"
-#--- XFCE for default applications
-mkdir -p ~/.local/share/applications/
-file=~/.local/share/applications/mimeapps.list; [ -e "${file}" ] && cp -n $file{,.bkup}
-[ ! -e "${file}" ] \
-  && echo '[Added Associations]' > "${file}"
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-#--- Firefox
-for VALUE in http https; do
-  sed -i 's#^x-scheme-handler/'${VALUE}'=.*#x-scheme-handler/'${VALUE}'=exo-web-browser.desktop#' "${file}"
-  grep -q '^x-scheme-handler/'${VALUE}'=' "${file}" 2>/dev/null \
-    || echo 'x-scheme-handler/'${VALUE}'=exo-web-browser.desktop' >> "${file}"
-done
-#--- Thunar
-for VALUE in file trash; do
-  sed -i 's#x-scheme-handler/'${VALUE}'=.*#x-scheme-handler/'${VALUE}'=exo-file-manager.desktop#' "${file}"
-  grep -q '^x-scheme-handler/'${VALUE}'=' "${file}" 2>/dev/null \
-    || echo 'x-scheme-handler/'${VALUE}'=exo-file-manager.desktop' >> "${file}"
-done
-file=~/.config/xfce4/helpers.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-sed -i 's#^FileManager=.*#FileManager=Thunar#' "${file}" 2>/dev/null
-grep -q '^FileManager=Thunar' "${file}" 2>/dev/null \
-  || echo 'FileManager=Thunar' >> "${file}"
-#--- Disable user folders in home folder
-file=/etc/xdg/user-dirs.conf; [ -e "${file}" ] && cp -n $file{,.bkup}
-sed -i 's/^XDG_/#XDG_/g; s/^#XDG_DESKTOP/XDG_DESKTOP/g;' "${file}"
-sed -i 's/^enable=.*/enable=False/' "${file}"
-find ~/ -maxdepth 1 -mindepth 1 -type d \
-  \( -name 'Documents' -o -name 'Music' -o -name 'Pictures' -o -name 'Public' -o -name 'Templates' -o -name 'Videos' \) -empty -delete
-apt -y -qq install xdg-user-dirs \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-xdg-user-dirs-update
-#--- Remove any old sessions
-rm -f ~/.cache/sessions/*
-#--- Set XFCE as default desktop manager
-update-alternatives --set x-session-manager /usr/bin/xfce4-session   #update-alternatives --config x-window-manager   #echo "xfce4-session" > ~/.xsession
-
-
 ##### Cosmetics (themes & wallpapers)
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Cosmetics${RESET}${RESET} ~ Giving it a personal touch"
 export DISPLAY=:0.0
-#--- axiom / axiomd (May 18 2010) XFCE4 theme ~ http://xfce-look.org/content/show.php/axiom+xfwm?content=90145
-mkdir -p ~/.themes/
-timeout 300 curl --progress -k -L -f "http://xfce-look.org/CONTENT/content-files/90145-axiom.tar.gz" > /tmp/axiom.tar.gz \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading axiom.tar.gz" 1>&2    #***!!! hardcoded path!
-tar -zxf /tmp/axiom.tar.gz -C ~/.themes/
-xfconf-query -n -c xsettings -p /Net/ThemeName -s "axiomd"
-xfconf-query -n -c xsettings -p /Net/IconThemeName -s "Vibrancy-Kali-Dark"
 #--- Get new desktop wallpaper      (All are #***!!! hardcoded paths!)
 mkdir -p /usr/share/wallpapers/
 echo -n '[1/10]'; timeout 300 curl --progress -k -L -f "https://www.kali.org/images/wallpapers-01/kali-wp-june-2014_1920x1080_A.png" > /usr/share/wallpapers/kali_blue_3d_a.png \
@@ -742,6 +490,7 @@ for FILE in $(echo ${_TMP}); do rm -f "${FILE}"; done
   && ln -sf /usr/share/images/desktop-base/kali-wallpaper_1920x1080.png /usr/share/wallpapers/kali_default2.0-1920x1080.jpg
 #--- New wallpaper & add to startup (so its random each login)
 file=/usr/local/bin/rand-wallpaper; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
@@ -765,6 +514,7 @@ bash "${file}"
 #--- Add to startup
 mkdir -p ~/.config/autostart/
 file=~/.config/autostart/wallpaper.desktop; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 [Desktop Entry]
@@ -782,6 +532,7 @@ EOF
 #--- Settings
 mkdir -p ~/.config/gtk-2.0/
 file=~/.config/gtk-2.0/gtkfilechooser.ini; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 sed -i 's/^.*ShowHidden.*/ShowHidden=true/' "${file}" 2>/dev/null \
   || cat <<EOF > "${file}"
@@ -801,6 +552,7 @@ dconf write /org/gnome/nautilus/preferences/show-hidden-files true
 #--- Bookmarks
 file=/root/.gtk-bookmarks; [ -e "${file}" ] && cp -n $file{,.bkup}
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
+touch $file
 grep -q '^file:///root/Downloads ' "${file}" 2>/dev/null \
   || echo 'file:///root/Downloads Downloads' >> "${file}"
 (dmidecode | grep -iq vmware) \
@@ -825,6 +577,7 @@ grep -q '^file:///var/www/html ' "${file}" 2>/dev/null \
 #--- Configure file browser - Thunar (need to re-login for effect)
 mkdir -p ~/.config/Thunar/
 file=~/.config/Thunar/thunarrc; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 sed -i 's/LastShowHidden=.*/LastShowHidden=TRUE/' "${file}" 2>/dev/null \
   || echo -e "[Configuration]\nLastShowHidden=TRUE" > "${file}"
@@ -840,6 +593,7 @@ gconftool-2 -t string -s /apps/gnome-terminal/profiles/Default/background_darkne
 ##### Configure bash - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
 file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
+touch $file
 grep -q "cdspell" "${file}" \
   || echo "shopt -sq cdspell" >> "${file}"             # Spell check 'cd' commands
 grep -q "autocd" "${file}" \
@@ -890,6 +644,7 @@ apt -y -qq install grc \
 #--- Setup aliases
 file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
+touch $file
 grep -q '^## grc diff alias' "${file}" 2>/dev/null \
   || echo -e "## grc diff alias\nalias diff='$(which grc) $(which diff)'\n" >> "${file}"
 grep -q '^## grc dig alias' "${file}" 2>/dev/null \
@@ -1060,6 +815,7 @@ apt -y -qq install terminator \
 #--- Configure terminator
 mkdir -p ~/.config/terminator/
 file=~/.config/terminator/config; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 [global_config]
@@ -1083,13 +839,6 @@ cat <<EOF > "${file}" \
       parent = ""
 [plugins]
 EOF
-#--- Set terminator for XFCE's default
-mkdir -p ~/.config/xfce4/
-file=~/.config/xfce4/helpers.rc; [ -e "${file}" ] && cp -n $file{,.bkup}    #exo-preferred-applications   #xdg-mime default
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-sed -i 's_^TerminalEmulator=.*_TerminalEmulator=debian-x-terminal-emulator_' "${file}" 2>/dev/null \
-  || echo -e 'TerminalEmulator=debian-x-terminal-emulator' >> "${file}"
-
 
 ##### Install ZSH & Oh-My-ZSH - root user.   Note:  'Open terminal here', will not work with ZSH.   Make sure to have tmux already installed
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ZSH${RESET} & ${GREEN}Oh-My-ZSH${RESET} ~ unix shell"
@@ -1099,6 +848,7 @@ apt -y -qq install zsh git curl \
 timeout 300 curl --progress -k -L -f "https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh" | zsh
 #--- Configure zsh
 file=~/.zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/zsh/zshrc
+touch $file
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 grep -q 'interactivecomments' "${file}" 2>/dev/null \
   || echo 'setopt interactivecomments' >> "${file}"
@@ -1125,6 +875,7 @@ chsh -s "$(which zsh)"
 apt -y -qq install tmux \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 file=~/.tmux.conf; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/tmux.conf
+touch $file
 #--- Configure tmux
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
@@ -1217,6 +968,7 @@ file=~/.screenrc; [ -e "${file}" ] && cp -n $file{,.bkup}
 if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
+  touch $file
   cat <<EOF > "${file}"
 ## Don't display the copyright page
 startup_message off
@@ -1251,6 +1003,7 @@ apt -y -qq install vim \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 #--- Configure vim
 file=/etc/vim/vimrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.vimrc
+touch $file
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 sed -i 's/.*syntax on/syntax on/' "${file}"
 sed -i 's/.*set background=dark/set background=dark/' "${file}"
@@ -1376,6 +1129,7 @@ find ~/.mozilla/firefox/*.default*/bookmarkbackups/ -type f -delete
 #--- Set firefox for XFCE's default
 mkdir -p ~/.config/xfce4/
 file=~/.config/xfce4/helpers.rc; [ -e "${file}" ] && cp -n $file{,.bkup}    #exo-preferred-applications   #xdg-mime default
+touch $file
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 sed -i 's#^WebBrowser=.*#WebBrowser=firefox#' "${file}" 2>/dev/null \
   || echo -e 'WebBrowser=firefox' >> "${file}"
@@ -1507,6 +1261,7 @@ file=~/.conkyrc; [ -e "${file}" ] && cp -n $file{,.bkup}
 if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
+  touch $file
   cat <<EOF > "${file}"
 --# Useful: http://forums.opensuse.org/english/get-technical-help-here/how-faq-forums/unreviewed-how-faq/464737-easy-configuring-conky-conkyconf.html
 conky.config = {
@@ -1613,6 +1368,7 @@ EOF
 fi
 #--- Create start script
 file=/usr/local/bin/start-conky; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
@@ -1629,6 +1385,7 @@ bash /usr/local/bin/start-conky >/dev/null 2>&1 &
 #--- Add to startup (each login)
 mkdir -p ~/.config/autostart/
 file=~/.config/autostart/conkyscript.desktop; [ -e "${file}" ] && cp -n $file{,.bkup}
+touch $file
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 [Desktop Entry]
@@ -1674,6 +1431,7 @@ file=~/.msf4/msf_autorunscript.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
 if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
+  touch $file
   cat <<EOF > "${file}"
 #run post/windows/escalate/getsystem
 
@@ -1688,6 +1446,7 @@ file=~/.msf4/msfconsole.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
 if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
+  touch $file
   cat <<EOF > "${file}"
 load auto_add_route
 
@@ -1811,8 +1570,6 @@ EOF
   export DISPLAY=:0.0
   [[ $(which gnome-shell) ]] \
     && gsettings set org.gnome.shell favorite-apps "$(gsettings get org.gnome.shell favorite-apps | sed "s/'org.gnome.gedit.desktop'/'atom.desktop'/")"
-  #--- Add to panel (XFCE)
-  ln -sf /usr/share/applications/atom.desktop ~/.config/xfce4/panel/launcher-8/textedit.desktop
 fi
 
 
