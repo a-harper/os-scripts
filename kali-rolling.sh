@@ -489,6 +489,7 @@ for FILE in $(echo ${_TMP}); do rm -f "${FILE}"; done
 [ -e "/usr/share/images/desktop-base/kali-wallpaper_1920x1080.png" ] \
   && ln -sf /usr/share/images/desktop-base/kali-wallpaper_1920x1080.png /usr/share/wallpapers/kali_default2.0-1920x1080.jpg
 #--- New wallpaper & add to startup (so its random each login)
+mkdir -p /usr/local/bin
 file=/usr/local/bin/rand-wallpaper; [ -e "${file}" ] && cp -n $file{,.bkup}
 touch $file
 cat <<EOF > "${file}" \
