@@ -498,9 +498,9 @@ cat <<EOF > "${file}" \
 
 #!/bin/bash
 
-wallpaper=$(ls "/usr/share/wallpapers/" | grep "kali_" | shuf -n1)
+wallpaper=\$(ls "/usr/share/wallpapers/" | grep "kali_" | shuf -n1)
 
-gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/wallpapers/$wallpaper";
+gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/wallpapers/\$wallpaper";
 
 EOF
 chmod -f 0500 "${file}"
