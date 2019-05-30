@@ -431,15 +431,6 @@ sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="vga=0x0318"
 update-grub
 
 
-if [[ $(dmidecode | grep -i virtual) ]]; then
-  ###### Configure login screen
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}login screen${RESET}"
-  #--- Enable auto (gui) login
-  file=/etc/gdm3/daemon.conf; [ -e "${file}" ] && cp -n $file{,.bkup}
-  sed -i 's/^.*AutomaticLoginEnable = .*/AutomaticLoginEnable = true/' "${file}"
-  sed -i 's/^.*AutomaticLogin = .*/AutomaticLogin = root/' "${file}"
-fi
-
 
 if [[ $(which gnome-shell) ]]; then
   ##### Configure GNOME 3
